@@ -113,6 +113,8 @@ const D=[
 ["wb","الدببة الثلاثة","We Bare Bears","series","cartoon",2015,"Cartoon Network Studios","Com",4.6,1,1,11,25,0],
 ["nt","سلاحف النينجا","Teenage Mutant Ninja Turtles","series","cartoon",2012,"Nickelodeon Animation Studio","Act",4.6,1,1,22,120,0]
 ].map(a=>({id:a[0],ar:a[1],en:a[2],type:a[3],kind:a[4],year:a[5],studio:a[6],genre:a[7],rate:a[8],ss:a[9],eps:a[10],min:a[11],hue:a[12],prem:a[13]}));
+// Licensed local episode supplied by the project owner; other titles remain unchanged.
+D.find(d=>d.id==="at").videoUrl="./adventure-time-s01e01.mp4";
 const ST=["Cartoon Network Studios","Nickelodeon Animation Studio"];
 const S={lang:"ar",tab:"home",view:null,id:null,q:"",ft:"",fk:"",fg:"",studio:"",cl:0,list:[],history:[],storageUser:"guest",plan:"free",trialEnds:0,season:1,audio:"ar",sub:"sar"};
 // Trial status is saved on this browser. A real multi-device account requires a backend.
