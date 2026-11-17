@@ -1,0 +1,37 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    // استبدل البريد placeholder ببريد المدير نفسه قبل النشر.
+    // الحماية الحقيقية هنا، وليس إخفاء زر لوحة الإدارة في الواجهة.
+    function isAdmin() {
+      return signedIn() && request.auth.token.email in ["YOUR_ADMIN_EMAIL@example.com"];
+    }
+
+    match /titles/{titleId} {
+      // الكتالوج العام قابل للقراءة فقط، والكتابة للمدير.
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /users/{userId} {
+      // يسمح للمستخدم بملفه وبيانات المشاهدة فقط، وليس plan/subscription أو أدوار الإدارة.
+      allow create: if signedIn() && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly([
+          'displayName', 'photoURL', 'favorites', 'watchHistory', 'createdAt', 'updatedAt'
+        ]);
+      allow read: if signedIn() && request.auth.uid == userId;
+      allow update: if signedIn() && request.auth.uid == userId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'displayName', 'photoURL', 'favorites', 'watchHistory', 'updatedAt'
+        ]);
+      allow delete: if signedIn() && request.auth.uid == userId;
+    }
+
+    match /subscriptions/{subscriptionId} {
+      // إنشاء وتعديل الاشتراكات لا يتم من المتصفح؛ يتم بعد تحقق خادم/بوابة دفع.
+      allow read: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid);
+      allow create, update, delete: if isAdmin();
+    }
+  }
+}
